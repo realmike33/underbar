@@ -99,27 +99,33 @@ var _ = {};
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
-    var result = [];
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
-    _.filter(collection, function(item){
-      if(!test(item)){result.push(item)};
+    return _.filter(collection, function(item){
+      return !test(item);
     });
-    return result;
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
-  
+    var obj = {};
+    _.each(array, function(item){
+      obj[item] = item;
+    })
+    return Object.keys(obj);
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
+    var result = [];
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
-
+    _.each(collection, function(item){
+      result.push(iterator(item));
+    })
+    return result;
   };
 
   /*
@@ -143,6 +149,10 @@ var _ = {};
   // Calls the method named by functionOrKey on each value in the list.
   // Note: you will nead to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    return _.map(collection, function(item) {
+      var isFn = typeof functionOrKey === 'function';
+      return (isFn ? functionOrKey : item[functionOrKey]).apply(item, args);
+    }); 
   };
 
   // Reduces an array or object to a single value by repetitively calling
@@ -159,6 +169,9 @@ var _ = {};
   //     return total + number;
   //   }, 0); // should be 6
   _.reduce = function(collection, iterator, accumulator) {
+    _.each(collection, function(value){
+
+    })
   };
 
   // Determine if the array or object contains a given value (using `===`).
