@@ -78,7 +78,6 @@ var _ = {};
     // implemented for you. Instead of using a standard `for` loop, though,
     // it uses the iteration helper `each`, which you will need to write.
     var result = -1;
-
     _.each(array, function(item, index) {
       if (item === target && result === -1) {
         result = index;
@@ -175,7 +174,6 @@ var _ = {};
      _.each(collection, function(item){
         accumulator = iterator(accumulator, item);
     });
-    console.log('result', accumulator);
     return accumulator;
     };
 
@@ -195,14 +193,29 @@ var _ = {};
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    iterator = iterator || function(n){
+      return n;
+    };
+    return _.reduce(collection, function(matched, item){
+      return !!iterator(item) && matched;
+    }, true)
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    var result = false;
+    if(collection.length === 0){return false;}
+    if(typeof iterator !== 'function'){iterator = function(n){return n;}}
+     _.every(collection, function(item){
+      if(!!iterator(item)){
+        result = true;
+        return;
+      }
+    })
+    return result;
   };
-
 
   /**
    * OBJECTS
@@ -223,11 +236,29 @@ var _ = {};
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    if(typeof obj !== 'object'){return obj;}
+   var arry = Array.prototype.slice.call(arguments, 1);
+    _.each(arry, function(objs){
+      _.each(objs, function(value, keys){
+        obj[keys] = value;
+      })
+    })
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    if(typeof obj !== 'object'){return obj;}
+   var arry = Array.prototype.slice.call(arguments, 1);
+    _.each(arry, function(objs){
+      _.each(objs, function(value, keys){
+        if(obj[keys] === undefined){
+          obj[keys] = value;
+        }
+      })
+    })
+    return obj;
   };
 
 
@@ -269,6 +300,17 @@ var _ = {};
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var cache = {};
+    return function(){
+      var keys = Array.prototype.join.call(arguments, '');
+      if(cache[keys]){
+        return cache[keys] 
+      } else{
+        var value = func(keys);
+        cache[keys] = value;
+        return value;
+      }
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
